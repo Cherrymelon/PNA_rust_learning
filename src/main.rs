@@ -1,6 +1,6 @@
-use clap::Command;
-use clap::Parser;
-use clap::Subcommand;
+use std::env::current_dir;
+
+use clap::{Command, Parser, Subcommand};
 
 use kvs::KvStore;
 
@@ -9,7 +9,6 @@ use kvs::KvStore;
 struct Cli {
     #[command(subcommand)]
     command: Option<Commands>,
-
 }
 
 #[derive(Subcommand)]
@@ -34,7 +33,7 @@ enum Commands {
 
 fn main() {
     let cli = Cli::parse();
-    let mut store = KvStore::new();
+    let mut store = KvStore::open(current_dir()?)?;
     match &cli.command {
         Some(Commands::Get { key }) => {
             println!("{:?}", store.get(key.to_string()))
